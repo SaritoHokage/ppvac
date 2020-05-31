@@ -1,0 +1,9 @@
+body {
+  background-color: white;
+	font-family: %s Verdana;
+	font-size: %dpt;}
+.button {
+	border: solid 1px grey;}
+.button.playing {
+	outline: solid 1px orange;
+	border-color: orange;}

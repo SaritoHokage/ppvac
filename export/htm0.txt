@@ -1,0 +1,4 @@
+<!DOCTYPE html>
+<html onload='load()' oncontextmenu='return false' onmousedown='mousedown(event)'>
+<head>
+	<title>

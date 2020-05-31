@@ -1,0 +1,215 @@
+</title>
+	<script>
+		var au = ''
+		var pla = 'stop'
+		var vol = 50
+		var dvol = 15		
+		
+		function load() {
+		}
+		function next(what) {
+			if (what=='play') 
+				return 'pause'
+			else
+			if (what=='pause') 
+				return 'play'
+			return
+		}
+		function addclass(who, what) {
+			var cl = who.className
+			if (cl.indexOf(what) != -1)
+				return
+			if (cl != '')
+				what = ' ' + what
+			who.className = cl + what				
+		}
+		function remclass(who, what) {
+			var cl = who.className
+			var rxp = new RegExp('\\s?\\b'+what+'\\b', 'g')
+			cl = cl.replace(rxp, '')
+			who.className = cl			
+		}		
+		function hasclass(ele,cls) {
+			return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+		}			
+		function set(who, what) {
+			if (what == 'play') {
+				who.volume = vol / 100
+				who.play()
+				addclass(who.parentNode, 'playing')
+			} else
+			if (what == 'pause') {
+				who.pause()
+				remclass(who.parentNode, 'playing')
+			} else
+			if (what == 'stop') {
+				who.currentTime=0
+				who.pause()
+				remclass(who.parentNode, 'playing')
+			} else		
+				return
+			pla = what
+		}
+		function rc(e){
+			var rightclick
+			if (!e) var e = window.event
+			if (e.which) rightclick = (e.which == 3)
+			else if (e.button) rightclick = (e.button == 2)
+			return rightclick
+		}	
+		function tg(who){
+			if (who == null)
+				return null		
+			var tag = who.tagName
+			tag = tag.toLowerCase()
+			return tag
+		}
+		function div(who){
+			var t = tg(who)
+			if (t == 'audio')
+				return who.parentNode
+			if (t == 'td')
+				return who.parentNode.parentNode.parentNode.parentNode
+			if (t == 'div')
+				return who
+			return null
+		}	
+		
+		function ev(){
+			set(document.getElementById(au), 'stop')
+		}
+		
+		function can(e){
+			remclass(div(e.target), 'loading')
+		}		
+		
+		function mousedown(e) {
+		
+			e.preventDefault()
+			
+			var who = div(e.target)
+			var tag = tg(who)
+			var u = document.getElementById(au)
+			var rightclick = rc(e)
+
+				
+		
+			if (rightclick){
+				set(u, next(pla))
+				return
+			}
+			
+			if (who == null)
+				return
+				
+			if (hasclass(who, 'loading'))
+				return				
+							
+			if (au != ''){
+				set(u, 'stop')
+			}			
+				
+				
+			var a = who.getElementsByTagName('audio')[0]
+			set(a, 'play')
+			
+			au = a.getAttribute('id')
+		}	
+		
+		function addHandler(object, event, handler, useCapture) {
+		     if (object.addEventListener) {
+		         object.addEventListener(event, handler, useCapture ? useCapture : false);
+     		} else if (object.attachEvent) {
+         		object.attachEvent('on' + event, handler);
+     		} else alert("Add handler is not supported");
+		}
+		/* Gecko */
+ 		addHandler(window, 'DOMMouseScroll', wheel);
+		/* Opera */
+ 		addHandler(window, 'mousewheel', wheel);
+		/* IE */
+		// addHandler(document, 'mousewheel', wheel);
+		
+		function check(s) {
+			if (s > 100)
+				return 100
+			else
+			if (s < 5)
+				return 5
+			else
+				return s
+		}
+		
+		function make(s) {
+			if (s == 100)
+				return 100
+			else
+			if (s > 9)
+				return '&nbsp;'+s
+			else
+				return '&nbsp;&nbsp;'+s
+		}	
+		
+		function wheel(event) {
+     		var delta;
+		
+     		event = event || window.event;
+     		// Opera и IE работают со свойством wheelDelta
+     		if (event.wheelDelta) {
+         		delta = event.wheelDelta / 120;
+         		// В Опере значение wheelDelta такое же, но с противоположным знаком
+		         //if (window.opera) delta = -delta;
+     		// В реализации Gecko получим свойство detail
+     		} else if (event.detail) {
+         		delta = -event.detail / 3;
+     		}
+     		// Запрещаем обработку события браузером по умолчанию
+     		if (event.preventDefault)  event.preventDefault();
+     		event.returnValue = false;
+     		vol = check(vol + dvol * delta);
+     		
+     		document.getElementById('vol').innerHTML = make(vol)
+     		if (pla == 'play') {
+				var u = document.getElementById(au)
+				u.volume = vol / 100
+     		}
+     		
+     		//document.getElementById('this').innerHTML + '<br />'+sem(delta)
+     		//return delta;
+		}		
+	</script>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;		
+			position: relative;
+			height: 100%;}			
+		.button {
+			display: table-cell;
+			overflow: hidden;
+			vertical-align: middle;		
+			position: absolute;
+			cursor: default;}
+		.button.playing {
+			z-index: 9999;}
+		.button.loading {
+			background-image: url(load.png);}				
+		table {
+			width: 100%; height: 100%;
+			border-spacing: 0;
+			border: none;
+			padding: 0;}
+		td {
+			text-align: center;
+			vertical-align: middle;}
+		#vol {
+			font-family: Courier New, Courier, monospace;
+			padding: 1px 3px;
+			color: grey;
+			float: left;}			
+	</style>
+	<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<div id='vol'>&nbsp;50</div>
+

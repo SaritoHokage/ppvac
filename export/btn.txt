@@ -1,0 +1,4 @@
+	<div class='button loading' style='left: %dpx; top: %dpx; width: %dpx; height: %dpx'>
+		<table><tr><td>%s</td></tr></table>
+		<audio id='%s' onended='ev()' oncanplay='can(event)'><source src='%s' type='audio/mpeg' /><source src='%s' type='audio/ogg' /></audio></div>
+
